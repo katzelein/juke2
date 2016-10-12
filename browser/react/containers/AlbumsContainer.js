@@ -1,5 +1,6 @@
-import connect from 'react-redux';
+import {connect} from 'react-redux';
 import Albums from '../components/Albums.js';
+import {fetchAlbumsFromServer} from '../myRedux.js';
 
 const AlbumsContainer = connect(
   mapStateToProps,
@@ -7,19 +8,16 @@ const AlbumsContainer = connect(
 )(Albums)
 
 
-const mapStateToProps = function(state, ownProps){
+function mapStateToProps (state, ownProps){
   return {
     albums: state.albums
   };
 };
 
-const mapDispatchToProps = function(dispatch, ownProps){
+function mapDispatchToProps (dispatch, ownProps){
   return {
-    getAlbums: function(albums){
-      dispatch({
-        type: 'GET_ALBUMS_FROM_SERVER',
-        albums
-      });
+    getAlbums: function(){
+      dispatch(fetchAlbumsFromServer())
     }
   }
 }

@@ -1,37 +1,36 @@
 import React from 'react';
+import {store, fetchAlbumsFromServer} from '../myRedux.js'
+import {convertAlbum, convertSong} from '../containers/AppContainer.js'
 
-class Albums extends React.Component {
-  constructor(){
-    super();
-    this.state = {};
+export default class Albums extends React.Component {
+  componentDidMount(){
+    this.props.getAlbums();
   }
-  render () {
+  render (props) {
+    if (!this.props.albums) {
+      return <h1>Loading...</h1>
+    }
     return(
       <div>
         <h3>Albums</h3>
         <div className="row">
-          <div className="col-xs-4">
-            <a className="thumbnail" href="#">
-              <img src="http://placeholdit.imgix.net/~text?txtsize=33&txt=ALBUMoneIMAGE&w=300&h=300" />
-              <div className="caption">
-                <h5>
-                  <span>ALBUM ONE NAME HERE</span>
-                </h5>
-                <small>NUMBER OF SONGS HERE songs</small>
-              </div>
-            </a>
-          </div>
-          <div className="col-xs-4">
-            <a className="thumbnail" href="#">
-              <img src="http://placeholdit.imgix.net/~text?txtsize=33&txt=ALBUMtwoIMAGE&w=300&h=300" />
-              <div className="caption">
-                <h5>
-                  <span>ALBUM TWO NAME HERE</span>
-                </h5>
-                <small>NUMBER OF SONGS HERE songs</small>
-              </div>
-            </a>
-          </div>
+          {
+            this.props.albums.map(function(album) {
+              return (
+                <div className="col-xs-4" key={album.id}>
+                  <a className="thumbnail" href="#">
+                    <img src={album.imageUrl} />
+                    <div className="caption">
+                      <h5>
+                        <span>{album.name}</span>
+                      </h5>
+                      <small>{album.songs.length} songs</small>
+                    </div>
+                  </a>
+                </div>
+              )
+            })
+          }
         </div>
       </div>
     )

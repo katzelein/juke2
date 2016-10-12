@@ -1,7 +1,8 @@
 'use strict';
 
 import React, { Component } from 'react';
-import store from '../myRedux.js';
+import {store, fetchAlbums} from '../myRedux.js';
+
 
 import initialState from '../initialState';
 import AUDIO from '../audio';
@@ -9,13 +10,15 @@ import AUDIO from '../audio';
 import Sidebar from '../components/Sidebar';
 import Album from '../components/Album';
 import Player from '../components/Player';
+import AlbumsContainer from './AlbumsContainer.js';
+import {fetchAlbumsFromServer} from '../myRedux.js'
 
-const convertSong = song => {
+export const convertSong = song => {
   song.audioUrl = `/api/songs/${song.id}/audio`;
   return song;
 };
 
-const convertAlbum = album => {
+export const convertAlbum = album => {
   album.imageUrl = `/api/albums/${album.id}/image`;
   album.songs = album.songs.map(convertSong);
   return album;
@@ -43,10 +46,6 @@ export default class AppContainer extends Component {
   }
 
   componentDidMount () {
-    fetch('/api/albums/1')
-      .then(res => res.json())
-      .then(album => this.onLoad(convertAlbum(album)));
-
     AUDIO.addEventListener('ended', () =>
       this.next());
     AUDIO.addEventListener('timeupdate', () =>
@@ -114,12 +113,7 @@ export default class AppContainer extends Component {
           <Sidebar />
         </div>
         <div className="col-xs-10">
-          <Album
-            album={this.state.album}
-            currentSong={this.state.currentSong}
-            isPlaying={this.state.isPlaying}
-            toggle={this.toggleOne}
-          />
+        <AlbumsContainer />
         </div>
         <Player
           currentSong={this.state.currentSong}

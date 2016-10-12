@@ -1,4 +1,9 @@
 const redux = require('redux');
+import {applyMiddleware} from 'redux';
+import createLogger from 'redux-logger';
+import thunkMiddleware from 'redux-thunk';
+import {convertAlbum} from './containers/AppContainer';
+
 const GET_ALBUMS_FROM_SERVER = 'GET_ALBUMS_FROM_SERVER';
 const initialState = require('./initialState.js');
 
@@ -6,16 +11,26 @@ function reducer (state = initialState, action){
   switch (action.type){
     case GET_ALBUMS_FROM_SERVER:
       return Object.assign({}, state, {
-        allAlbums: action.albums
+        albums: action.albums
       });
     default: return state;
   }
 }
 
-let store = redux.createStore(reducer);
+const getAlbums = function(albums){
+  return { type: GET_ALBUMS_FROM_SERVER, albums }
+};
 
-store.getState();
-store.dispatch({ type: GET_ALBUMS_FROM_SERVER, albums: []});
-store.getState();
+export const fetchAlbumsFromServer =() => {
+  return dispatch =>
+    fetch('/api/albums')
+      .then(res => res.json())
+      .then(albums => {
+        albums.map(album => {
+          convertAlbum(album);
+        })
+        dispatch(getAlbums(albums));
+      })
+}
 
-module.exports = store;
+export let store = redux.createStore(reducer, applyMiddleware(createLogger(), thunkMiddleware));
